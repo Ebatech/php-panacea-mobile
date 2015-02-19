@@ -22,6 +22,13 @@ class phpPanaceaMobile
 	public $debug = false;
 
 	/**
+	* options for file_get_contents()
+	*
+	* @var array
+	*/
+	public $fgc_options = [];
+
+	/**
 	* needed api-key for communication
 	*
 	* @var bool|string
@@ -45,6 +52,9 @@ class phpPanaceaMobile
 			return $this->error('You must supply a API Key');
 		else
 			$this->apikey = $options['apikey'];
+
+		if (isset($options['ssl_no_verify']) AND $options['ssl_no_verify'] == true)
+			$this->fgc_options = ["ssl"=>["verify_peer"=>false]];
 
 		if (isset($options['thread']))
 			$this->thread = $options['thread'];
@@ -80,7 +90,7 @@ class phpPanaceaMobile
 
 		if($this->debug) echo "url: ".$url."\n";
 
-		$response = file_get_contents($url);
+		$response = file_get_contents($url, false, stream_context_create($this->fgc_options) );
 
 		if($this->debug) echo "response: ".$response."\n";
 
